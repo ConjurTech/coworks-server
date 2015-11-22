@@ -47,7 +47,15 @@ def getCompanyInfo(url)
 			data = elements[i=i+1]
 			data = data.css('> text()').text.strip + data['data-last'].strip
 		elsif lbl.start_with?('Email')
-			data = 'TODO'
+			a = elements[i].css('span.__cf_email__').first['data-cfemail']
+			data = ''
+			r = Integer(a[0...2], 16)
+			n = 2
+			while a.length - n > 0 do
+				i = Integer(a[n...(n+2)], 16)^r
+				data += i.chr
+				n += 2
+			end
 		elsif lbl.start_with?('Website')
 			data = elements[i].css('a').text
 		end
