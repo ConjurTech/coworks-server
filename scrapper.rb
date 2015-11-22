@@ -37,13 +37,26 @@ def getCompanyInfo(url)
 	# email is masked. not sure how resolve this now.
 	infoDiv = div.css('div.row.com_info div').first
 	elements = infoDiv.elements
-	len = elements.length
-	for i in (0...len).step(2)
-		lbl = elements[i].css('label').text[0..-2]
-		data = elements[i+1]
+	i = 0
+	while i < elements.length do
+		lbl = elements[i].css('label').text
+		if lbl.start_with?('Telephone')
+			data = elements[i=i+1]
+			data = data.css('> text()').text.strip + data['data-last'].strip
+		elsif lbl.start_with?('Fax')
+			data = elements[i=i+1]
+			data = data.css('> text()').text.strip + data['data-last'].strip
+		elsif lbl.start_with?('Email')
+			data = 'TODO'
+		elsif lbl.start_with?('Website')
+			data = elements[i].css('a').text
+		end
+		i += 1
+		
 		puts lbl
 		puts data
 	end
+
 	categories = []
 	elements = div.css('div div.line_share_social p.row.com_cat a')
 	elements.each do |element|
@@ -64,3 +77,4 @@ end
 # puts getCategoryURLs('/list_category/9237/0')
 # puts getCompanyURLs('/category/livestock-dealers')
 # getCompanyInfo('http://www.yellowpages.com.sg/company/menara-freight-consolidators-m-sdn-bhd')
+getCompanyInfo('http://www.yellowpages.com.sg/company/v8-environmental-pte-ltd')
