@@ -1,0 +1,11 @@
+Company
+name:string
+address:string
+telephone:string
+fax:string
+email:string
+website:string
+categories:Category
+market_coverage:string
+opening_hours:string
+
