@@ -52,6 +52,7 @@ class UserDashboard < Administrate::BaseDashboard
       :email,
       :name,
       :username,
+      :created_at,
       :last_sign_in_at
   ]
 
