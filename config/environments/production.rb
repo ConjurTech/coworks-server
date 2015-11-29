@@ -96,10 +96,6 @@ Rails.application.configure do
                         :slack => {
                             :webhook_url => ENV['SLACK_WEBHOOK_URL'],
                             :channel => ENV['SLACK_CHANNEL'],
-                            :username => ENV['SLACK_USERNAME'],
-                            :additional_parameters => {
-                                :icon_url => ENV['SLACK_ICON_URL'],
-                                :mrkdwn => true
-                            }
+                            :username => ENV['SLACK_USERNAME']
                         }
 end
