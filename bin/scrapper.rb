@@ -27,6 +27,15 @@ def getCompanyURLs(relativeURL)
 	return doc.css('div.left.company_info a:not([onclick])').map { |a| a['href'] }
 end
 
+# currently available fields if it exists
+# name
+# address
+# email
+# telephone
+# fax
+# categories
+# market coverage
+# opening hours
 def getCompanyInfo(url)
 	doc = Nokogiri::HTML(open(url))
 	div = doc.css('article.company_detail div.top_company_detail')
@@ -34,7 +43,6 @@ def getCompanyInfo(url)
 	address = div.css('div.row.com_address p span').text
 	puts name, address
 
-	# email is masked. not sure how resolve this now.
 	infoDiv = div.css('div.row.com_info div').first
 	elements = infoDiv.elements
 	i = 0
@@ -58,6 +66,8 @@ def getCompanyInfo(url)
 			end
 		elsif lbl.start_with?('Website')
 			data = elements[i].css('a').text
+		else
+			$stderr.puts "label: " + lbl
 		end
 		i += 1
 		
@@ -85,4 +95,18 @@ end
 # puts getCategoryURLs('/list_category/9237/0')
 # puts getCompanyURLs('/category/livestock-dealers')
 # getCompanyInfo('http://www.yellowpages.com.sg/company/menara-freight-consolidators-m-sdn-bhd')
-getCompanyInfo('http://www.yellowpages.com.sg/company/v8-environmental-pte-ltd')
+# getCompanyInfo('http://www.yellowpages.com.sg/company/v8-environmental-pte-ltd')
+
+parentCategoryURLs = getParentCategoryURLs()
+parentCategoryURLs[0...3].each do |parentCategoryURL|
+	childCategoryURLS = getChildCategoryURLs(parentCategoryURL)
+	childCategoryURLS[0...3].each do |childCategoryURL|
+		categoryURLs = getCategoryURLs(childCategoryURL)
+		categoryURLs[0...3].each do |categoryURL|
+			companyURLs = getCompanyURLs(categoryURL)
+			companyURLs[0...3].each do |companyURL|
+				getCompanyInfo(companyURL)
+			end
+		end
+	end
+end
