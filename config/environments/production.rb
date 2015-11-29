@@ -80,6 +80,20 @@ Rails.application.configure do
   # Set host name for named urls in emails
   config.action_mailer.default_url_options = { host: ENV['HOSTNAME'] || 'http://localhost' }
 
+  # Use paperclip + aws s3 for images
+  config.paperclip_defaults = {
+      :storage => :s3,
+      :url => ':s3_domain_url',
+      :path => '/:class/:attachment/:id_partition/:style/:filename',
+      :s3_host_name => 's3-ap-southeast-1.amazonaws.com',
+      :s3_protocol => :https,
+      :s3_credentials => {
+          :bucket => ENV['S3_BUCKET_NAME'],
+          :access_key_id => ENV['AWS_ACCESS_KEY_ID'],
+          :secret_access_key => ENV['AWS_SECRET_KEY']
+      }
+  }
+
   # Use Mandrill for emails
   config.action_mailer.smtp_settings = {
       :address   => "smtp.mandrillapp.com",

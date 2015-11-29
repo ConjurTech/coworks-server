@@ -8,6 +8,10 @@ gem 'devise_token_auth', github: "RavenXce/devise_token_auth"
 gem 'omniauth'
 
 # Engine gems
+gem 'paperclip'
+gem 'phony_rails'
+gem 'email_validator'
+gem 'validate_url'
 gem 'sidekiq'
 gem 'slack-notifier'
 gem 'exception_notification'
