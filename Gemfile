@@ -9,6 +9,7 @@ gem 'omniauth'
 
 # Engine gems
 gem 'paperclip'
+gem 'aws-sdk-v1'
 gem 'phony_rails'
 gem 'email_validator'
 gem 'validate_url'
