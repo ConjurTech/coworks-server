@@ -35,6 +35,7 @@ end
 # fax
 # categories
 # market coverage
+# payment method
 # opening hours
 def getCompanyInfo(url)
 	doc = Nokogiri::HTML(open(url))
@@ -47,6 +48,7 @@ def getCompanyInfo(url)
 	elements = infoDiv.elements
 	i = 0
 	while i < elements.length do
+		puts 'i: ' + i.to_s + '/' + elements.length.to_s
 		lbl = elements[i].css('label').text
 		if lbl.start_with?('Telephone')
 			data = elements[i=i+1]
@@ -60,14 +62,16 @@ def getCompanyInfo(url)
 			r = Integer(a[0...2], 16)
 			n = 2
 			while a.length - n > 0 do
-				i = Integer(a[n...(n+2)], 16)^r
-				data += i.chr
+				j = Integer(a[n...(n+2)], 16)^r
+				data += j.chr
 				n += 2
 			end
 		elsif lbl.start_with?('Website')
 			data = elements[i].css('a').text
+			puts 'what the flying fk'
 		else
-			$stderr.puts "label: " + lbl
+			puts 'wtf'
+			STDERR.puts "label: " + lbl
 		end
 		i += 1
 		
@@ -82,11 +86,16 @@ def getCompanyInfo(url)
 	end
 	puts 'Categories: ', categories
 
-	paragraphs = div.css('div div.person_contact div p')
+	textNodes = div.css('div div.left.com_description text()')
+	description = textNodes.map {|textNode| textNode.text.strip }.join("\n")
+	puts description
+
+	paragraphs = div.css('div div.com_person_contact p')
 	paragraphs.each do |paragraph|
 		lbl = paragraph.css('label').text
-		span = paragraph.css('span text()')
-		puts lbl, span
+		textNodes = paragraph.css('span text()')
+		data = textNodes.map {|textNode| textNode.text.strip }.join("\n")
+		puts lbl, data
 	end
 end
 
@@ -96,17 +105,18 @@ end
 # puts getCompanyURLs('/category/livestock-dealers')
 # getCompanyInfo('http://www.yellowpages.com.sg/company/menara-freight-consolidators-m-sdn-bhd')
 # getCompanyInfo('http://www.yellowpages.com.sg/company/v8-environmental-pte-ltd')
+getCompanyInfo('http://www.yellowpages.com.sg/company/lj-investigation-consultancy-services-pte-ltd')
 
-parentCategoryURLs = getParentCategoryURLs()
-parentCategoryURLs[0...3].each do |parentCategoryURL|
-	childCategoryURLS = getChildCategoryURLs(parentCategoryURL)
-	childCategoryURLS[0...3].each do |childCategoryURL|
-		categoryURLs = getCategoryURLs(childCategoryURL)
-		categoryURLs[0...3].each do |categoryURL|
-			companyURLs = getCompanyURLs(categoryURL)
-			companyURLs[0...3].each do |companyURL|
-				getCompanyInfo(companyURL)
-			end
-		end
-	end
-end
+# parentCategoryURLs = getParentCategoryURLs()
+# parentCategoryURLs[0...3].each do |parentCategoryURL|
+# 	childCategoryURLS = getChildCategoryURLs(parentCategoryURL)
+# 	childCategoryURLS[0...3].each do |childCategoryURL|
+# 		categoryURLs = getCategoryURLs(childCategoryURL)
+# 		categoryURLs[0...3].each do |categoryURL|
+# 			companyURLs = getCompanyURLs(categoryURL)
+# 			companyURLs[0...3].each do |companyURL|
+# 				getCompanyInfo(companyURL)
+# 			end
+# 		end
+# 	end
+# end
