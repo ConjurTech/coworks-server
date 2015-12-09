@@ -1,4 +1,7 @@
 Rails.application.routes.draw do
+  resources :brands
+  resources :tags
+  resources :categories
   resources :companies
 
   namespace :admin do

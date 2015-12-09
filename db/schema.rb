@@ -11,10 +11,39 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151129121207) do
+ActiveRecord::Schema.define(version: 20151209140812) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "brands", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "brands_companies", id: false, force: :cascade do |t|
+    t.integer "brand_id"
+    t.integer "company_id"
+  end
+
+  add_index "brands_companies", ["brand_id"], name: "index_brands_companies_on_brand_id", using: :btree
+  add_index "brands_companies", ["company_id"], name: "index_brands_companies_on_company_id", using: :btree
+
+  create_table "categories", force: :cascade do |t|
+    t.string   "name"
+    t.integer  "category_id"
+    t.datetime "created_at",  null: false
+    t.datetime "updated_at",  null: false
+  end
+
+  create_table "categories_companies", id: false, force: :cascade do |t|
+    t.integer "category_id"
+    t.integer "company_id"
+  end
+
+  add_index "categories_companies", ["category_id"], name: "index_categories_companies_on_category_id", using: :btree
+  add_index "categories_companies", ["company_id"], name: "index_categories_companies_on_company_id", using: :btree
 
   create_table "companies", force: :cascade do |t|
     t.string   "name"
@@ -31,6 +60,24 @@ ActiveRecord::Schema.define(version: 20151129121207) do
     t.string   "logo_content_type"
     t.integer  "logo_file_size"
     t.datetime "logo_updated_at"
+    t.string   "facebook"
+    t.string   "staff_strength"
+    t.string   "payment_method"
+    t.string   "market_coverage"
+  end
+
+  create_table "companies_tags", id: false, force: :cascade do |t|
+    t.integer "company_id"
+    t.integer "tag_id"
+  end
+
+  add_index "companies_tags", ["company_id"], name: "index_companies_tags_on_company_id", using: :btree
+  add_index "companies_tags", ["tag_id"], name: "index_companies_tags_on_tag_id", using: :btree
+
+  create_table "tags", force: :cascade do |t|
+    t.string   "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|

@@ -48,12 +48,15 @@ end
 # tel
 # payment method
 # market coverage
+# year established
 # opening hours
 # product & services
 # display ad
 # catalogue
 # listings
 def getCompanyInfo(url)
+	company = {}
+
 	doc = Nokogiri::HTML(open(url))
 	article = doc.css('article.company_detail')
 
@@ -62,16 +65,14 @@ def getCompanyInfo(url)
 	topDiv =  article.css('div.top_company_detail')
 
 	nameDiv = topDiv.css('div.com_name')
-	name = nameDiv.css('h2').text
-	subName = nameDiv.css('p').text
-	logo = nameDiv.css('a img').first['src']
-	address = topDiv.css('div.row.com_address p span').text
-	puts name, subName, logo, address
+	company["name"] = nameDiv.css('h2').text.strip
+	subName = nameDiv.css('p').text.strip
+	company["logo"] = nameDiv.css('a img').first['src'].strip
+	company["address"] = topDiv.css('div.row.com_address p span').text
 
 	a = topDiv.css('div.com_social a').first
 	if a != nil
-		facebook = a['href']
-		puts facebook
+		company["facebook"] = a['href'].strip
 	end
 
 	infoDiv = topDiv.css('div.row.com_info div').first
@@ -80,23 +81,23 @@ def getCompanyInfo(url)
 	while i < elements.length do
 		lbl = elements[i].css('label').text.strip
 		case lbl
-		when "Telephone :", "Fax :"
+		when "Telephone :"
 			data = elements[i=i+1]
-			data = data.css('> text()').text.strip + data['data-last'].strip
+			company["telephone_number"] = data.css('> text()').text.strip + data['data-last'].strip
+		when "Fax :"
+			data = elements[i=i+1]
+			company["fax_number"] = data.css('> text()').text.strip + data['data-last'].strip
 		when "Email :"
 			dataCfEmail = elements[i].css('span.__cf_email__').first['data-cfemail']
-			data = getEmail(dataCfEmail)
+			company["email"] = getEmail(dataCfEmail)
 		when "Website:"
-			data = elements[i].css('a').text
+			company["website"] = elements[i].css('a').text.strip
 		when "Catalogue Link :"
-			data = elements[i].css('a.com_catelogue').first['href']
+			data = elements[i].css('a.com_catalogue').first['href']
 		else
 			STDERR.puts "label: " + lbl
 		end
 		i += 1
-		
-		puts lbl
-		puts data
 	end
 
 	categories = []
@@ -104,26 +105,41 @@ def getCompanyInfo(url)
 	elements.each do |element|
 		categories.push(element.text)
 	end
-	puts 'Categories: ', categories
+	company["categories"] = categories
 
 	textNodes = topDiv.css('div div.left.com_description text()')
 	description = textNodes.map {|textNode| textNode.text.strip }.join("\n")
-	puts description
+	company["description"] = description
 
 	paragraphs = topDiv.css('div div.com_person_contact p')
 	paragraphs.each do |paragraph|
 		lbl = paragraph.css('label').text.strip
 		case lbl
-		when "Main Contact :", "Designation :", "Websites :", "Tel :", "Payment Method :", "Market Coverage :", "Opening hours :", "Staff Strength :", "Year Established :"
+		when "Main Contact :",
+			"Designation :",
+			"Websites :",
+			"Tel :",
+			"Year Established :"
 			textNodes = paragraph.css('span text()')
 			data = textNodes.map {|textNode| textNode.text.strip }.join("\n")
+		when "Payment Method :"
+			textNodes = paragraph.css('span text()')
+			company["payment_method"] = textNodes.map {|textNode| textNode.text.strip }.join("\n")
+		when "Staff Strength :"
+			textNodes = paragraph.css('span text()')
+			company["staff_strength"] = textNodes.map {|textNode| textNode.text.strip }.join("\n")
+		when "Market Coverage :"
+			textNodes = paragraph.css('span text()')
+			company["market_coverage"] = textNodes.map {|textNode| textNode.text.strip }.join("\n")
+		when "Opening hours :"
+			textNodes = paragraph.css('span text()')
+			company["opening_hours"] = textNodes.map {|textNode| textNode.text.strip }.join("\n")
 		when "Email :"
 			dataCfEmail = paragraph.css('a.__cf_email__').first['data-cfemail']
 			data = getEmail(dataCfEmail)
 		else
 			STDERR.puts "label: " + lbl
 		end
-		puts lbl, data
 	end
 
 	# middle details
@@ -131,10 +147,10 @@ def getCompanyInfo(url)
 	middleDiv = article.css('div.company_detail_middle')
 
 	products = middleDiv.css('#product div a').map {|a| a['title']}
-	puts 'Products: ', products
+
+	company["brands"] = middleDiv.css('#brands div a').map {|a| a['title']}
 
 	displayAd = middleDiv.css('#iframeDisplayAd').first['src']
-	puts displayAd
 
 	iframe = middleDiv.css('#catalogue div.company_tab_content iframe').first
 	if iframe != nil
@@ -146,6 +162,8 @@ def getCompanyInfo(url)
 	# middleDiv.css('#comp_detail_all_listing div').each do|listingDiv| {
 	# 	divs = listingDiv.css('div div')
 	# }
+
+	return company
 end
 
 def getEmail(a)
@@ -158,6 +176,15 @@ def getEmail(a)
 		n += 2
 	end
 	return email
+end
+
+company = getCompanyInfo("http://www.yellowpages.com.sg/company/komoco-motors-pte-ltd")
+puts company.to_json
+uri = URI('http://localhost:3000/companies.json')
+req = Net::HTTP::Post.new(uri, initheader = {'Content-Type' =>'application/json'})
+req.body = company.to_json
+res = Net::HTTP.start(uri.hostname, uri.port) do |http|
+  http.request(req)
 end
 
 # puts getParentCategoryURLs()

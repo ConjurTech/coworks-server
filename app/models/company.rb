@@ -14,6 +14,9 @@ class Company < ActiveRecord::Base
 
   before_save :save_normalized_numbers
 
+  has_and_belongs_to_many :categories
+  has_and_belongs_to_many :brands
+
   # We only set the noramlized number on a attribute accessor,
   # so copy it to the actual record if validation was successful.
   def save_normalized_numbers
