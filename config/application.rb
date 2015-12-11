@@ -23,6 +23,7 @@ module CoworksBackend
     # Do not swallow errors in after_commit/after_rollback callbacks.
     config.active_record.raise_in_transactional_callbacks = true
 
+    # Cause rake tasks are failing http://stackoverflow.com/questions/13712012/error-pushing-to-heroku-aborting-my-rake-assetsprecompile
     config.assets.initialize_on_precompile = false
   end
 end
