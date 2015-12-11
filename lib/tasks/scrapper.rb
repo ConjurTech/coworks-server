@@ -1,8 +1,7 @@
 require 'json'
 require 'nokogiri'
 require 'open-uri'
-require 'CGI'
-require 'base64'
+require 'cgi'
 
 @baseURL = 'http://www.yellowpages.com.sg'
 
