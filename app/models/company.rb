@@ -10,12 +10,13 @@ class Company < ActiveRecord::Base
 
   validates :normalized_phone_number, :normalized_fax_number, phony_plausible: true
   validates :email, email: true, allow_blank: true
-  validates :website, url: true, allow_blank: true
+  # validates :website, url: true, allow_blank: true
 
   before_save :save_normalized_numbers
 
-  has_and_belongs_to_many :categories
   has_and_belongs_to_many :brands
+  has_and_belongs_to_many :categories
+  has_and_belongs_to_many :tags
 
   # We only set the noramlized number on a attribute accessor,
   # so copy it to the actual record if validation was successful.
