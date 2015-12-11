@@ -13,8 +13,7 @@ namespace :seeder do
         categoryURLs.each do |categoryURL|
           companyURLs = getCompanyURLs(categoryURL)
           companyURLs.each do |companyURL|
-            url = 'http://www.yellowpages.com.sg/company/lj-investigation-consultancy-services-pte-ltd'
-            params = getCompany(url)
+            params = getCompany(companyURL)
             company = Company.new(params[:company])
             company.categories << params[:categories].map { |category| Category.find_or_create_by(name: category) }
             company.brands << params[:brands].map { |brand| Brand.find_or_create_by(name: brand) }
