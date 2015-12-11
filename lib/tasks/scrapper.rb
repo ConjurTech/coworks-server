@@ -152,7 +152,7 @@ def getCompany(url)
 
 	brands = middleDiv.css('#brands div a').map {|a| a['title']}
 
-	displayAd = middleDiv.css('#iframeDisplayAd').first['src']
+	# displayAd = middleDiv.css('#iframeDisplayAd').first['src']
 
 	iframe = middleDiv.css('#catalogue div.company_tab_content iframe').first
 	if iframe != nil
