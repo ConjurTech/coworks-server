@@ -4,7 +4,7 @@ require 'open-uri'
 namespace :seeder do
   desc "Seed companies from yellowpages into db"
   task seed: :environment do
-    Rails.logger.info "Start: " + Time.now
+    Rails.logger.info "Start: " + Time.now.to_s
     parentCategoryURLs = getParentCategoryURLs()
     parentCategoryURLs.each do |parentCategoryURL|
       childCategoryURLS = getChildCategoryURLs(parentCategoryURL)
@@ -31,6 +31,6 @@ namespace :seeder do
         end
       end
     end
-    Rails.logger.info "End: " + Time.now
+    Rails.logger.info "End: " + Time.now.to_s
   end
 end
