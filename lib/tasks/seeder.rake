@@ -24,7 +24,7 @@ namespace :seeder do
             }
 
             if !company.save
-              Rails.logger.error "Failed to save " + companyUrl
+              Rails.logger.error "Failed to save " + companyURL
             end
           end
         end
